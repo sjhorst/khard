@@ -89,7 +89,8 @@ def create_new_contact(address_book):
         print("Canceled")
     else:
         new_contact.write_to_file()
-        print("Creation successful\n\n%s" % new_contact.print_vcard())
+        print("Creation successful\n\n") 
+        new_contact.print_vcard()
 
 
 def modify_existing_contact(old_contact):
@@ -138,10 +139,12 @@ def modify_existing_contact(old_contact):
 
     # check if the user changed anything
     if new_contact is None or old_contact == new_contact:
-        print("Nothing changed\n\n%s" % old_contact.print_vcard())
+        print("Nothing changed\n\n")
+        old_contact.print_vcard()
     else:
         new_contact.write_to_file(overwrite=True)
-        print("Modification successful\n\n%s" % new_contact.print_vcard())
+        print("Modification successful\n\n")
+        new_contact.print_vcard()
 
 
 def merge_existing_contacts(source_contact, target_contact,
@@ -219,26 +222,28 @@ def merge_existing_contacts(source_contact, target_contact,
 
     # compare them
     if merged_contact is None or target_contact == merged_contact:
-        print("Target contact unmodified\n\n%s" % target_contact.print_vcard())
+        print("Target contact unmodified\n\n)")
+        target_contact.print_vcard()
         sys.exit(0)
 
     while True:
+        print("Merge contact %s from address book %s into contact %s from "
+              "address book %s\n\n" % (source_contact, 
+                                       source_contact.address_book, 
+                                       merged_contact,
+                                       merged_contact.address_book))
         if delete_source_contact:
-            input_string = input(
-                "Merge contact %s from address book %s into contact %s from "
-                "address book %s\n\nTo be removed\n\n%s\n\nMerged\n\n%s\n\n"
-                "Are you sure? (y/n): " % (
-                    source_contact, source_contact.address_book, merged_contact,
-                    merged_contact.address_book, source_contact.print_vcard(),
-                    merged_contact.print_vcard()))
+            print("To be removed\n\n")
+            source_contact.print_vcard()
+            print("\n\nMerged\n\n")
+            merged_contact.print_vcard()
+            input_string = input("\n\nAre you sure? (y/n): ")
         else:
-            input_string = input(
-                "Merge contact %s from address book %s into contact %s from "
-                "address book %s\n\nKeep unchanged\n\n%s\n\nMerged:\n\n%s\n\n"
-                "Are you sure? (y/n): " % (
-                    source_contact, source_contact.address_book, merged_contact,
-                    merged_contact.address_book, source_contact.print_vcard(),
-                    merged_contact.print_vcard()))
+            print("Keep unchanged\n\n")
+            source_contact.print_vcard()
+            print("\n\nMerged:\n\n")
+            merged_contact.print_vcard()
+            input_string = input("\n\nAre you sure? (y/n): ")
         if input_string.lower() in ["", "n", "q"]:
             print("Canceled")
             return
@@ -249,7 +254,8 @@ def merge_existing_contacts(source_contact, target_contact,
     merged_contact.write_to_file(overwrite=True)
     if delete_source_contact:
         source_contact.delete_vcard_file()
-    print("Merge successful\n\n%s" % merged_contact.print_vcard())
+    print("Merge successful\n\n")
+    merged_contact.print_vcard()
 
 
 def copy_contact(contact, target_address_book, delete_source_contact):
@@ -743,7 +749,8 @@ def new_subcommand(selected_address_books, input_from_stdin_or_file,
         if open_editor:
             modify_existing_contact(new_contact)
         else:
-            print("Creation successful\n\n%s" % new_contact.print_vcard())
+            print("Creation successful\n\n")
+            new_contact.print_vcard()
     else:
         create_new_contact(selected_address_book)
 
@@ -851,7 +858,8 @@ def add_email_subcommand(input_from_stdin_or_file, selected_address_books):
             break
     # save to disk
     selected_vcard.write_to_file(overwrite=True)
-    print("Done.\n\n%s" % selected_vcard.print_vcard())
+    print("Done.\n\n")
+    selected_vcard.print_vcard()
 
 
 def birthdays_subcommand(vcard_list, parsable):
@@ -1118,9 +1126,12 @@ def modify_subcommand(selected_vcard, input_from_stdin_or_file, open_editor):
             print(err)
             sys.exit(1)
         if selected_vcard == new_contact:
-            print("Nothing changed\n\n%s" % new_contact.print_vcard())
+            print("Nothing changed\n\n")
+            new_contact.print_vcard()
         else:
-            print("Modification\n\n%s\n" % new_contact.print_vcard())
+            print("Modification\n\n")
+            new_contact.print_vcard()
+            print("\n")
             while True:
                 input_string = input("Do you want to proceed (y/n)? ")
                 if input_string.lower() in ["", "n", "q"]:
@@ -1299,16 +1310,19 @@ def copy_or_move_subcommand(action, vcard_list, target_address_book_list):
         else:
             # source and target contacts are different
             # either overwrite the target one or merge into target contact
-            print("The address book %s already contains the contact %s\n\n"
-                  "Source\n\n%s\n\nTarget\n\n%s\n\n"
+            print("The address book %s already contains the contact %s\n\n" % (
+                      target_vcard.address_book, 
+                      source_vcard))
+            print("Source\n\n")
+            source_vcard.print_vcard()
+            print("\n\nTarget\n\n")
+            target_vcard.print_vcard()
+            print("\n\n"
                   "Possible actions:\n"
                   "  a: %s anyway\n"
                   "  m: Merge from source into target contact\n"
                   "  o: Overwrite target contact\n"
-                  "  q: Quit" % (
-                      target_vcard.address_book, source_vcard,
-                      source_vcard.print_vcard(), target_vcard.print_vcard(),
-                      "Move" if action == "move" else "Copy"))
+                  "  q: Quit" % ("Move" if action == "move" else "Copy"))
             while True:
                 input_string = input("Your choice: ")
                 if input_string.lower() == "a":
@@ -1760,7 +1774,7 @@ def main(argv=sys.argv[1:]):
             print("Found no contact")
             sys.exit(1)
         if args.action == "details":
-            print(selected_vcard.print_vcard())
+            selected_vcard.print_vcard()
         elif args.action == "export":
             args.output_file.write(
                 "# Contact template for khard version %s\n"

@@ -87,7 +87,7 @@ class AddressBook(metaclass=abc.ABCMeta):
         regexp = re.compile(query, re.IGNORECASE | re.DOTALL)
         for contact in self.contacts.values():
             # search in all contact fields
-            contact_details = contact.print_vcard()
+            contact_details = contact.export_vcard()
             if regexp.search(contact_details) is not None:
                 yield contact
             else:
