@@ -33,9 +33,25 @@ class Config:
 
     supported_vcard_versions = ("3.0", "4.0")
 
+    __instance = None
+    __config_file = None
+
+    def __new__(cls, config_file=""):
+        """
+        Make Config object a singleton pattern so that it can be
+        instantiated anywhere but only ever loaded into memory once.
+
+        """
+        if Config.__instance is None:
+            Config.__instance = object.__new__(cls)
+            Config.__config_file = config_file
+        return Config.__instance
+
+
     def __init__(self, config_file=""):
         self.config = None
         self.abooks = []
+        config_file = Config.__config_file
 
         # set locale
         locale.setlocale(locale.LC_ALL, '')

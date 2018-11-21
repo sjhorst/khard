@@ -1352,8 +1352,16 @@ class CarddavObject:
                     "Webpage", self._get_webpages(), 0, 8, True)
         return '\n'.join(strings) + "\n"   # posix standard: eof char must be \n
 
+
+    def export_vcard(self):
+        pass
+
+
     def print_vcard(self, show_address_book=True, show_uid=True):
+        from .config import Config
+
         strings = []
+        config = Config()
 
         # name
         if self._get_first_names() or self._get_last_names():
