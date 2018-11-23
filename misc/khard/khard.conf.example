@@ -35,7 +35,9 @@ preferred_phone_number_type = pref, cell, home
 # or nothing for non-filtered alphabetical order
 preferred_email_address_type = pref, work, home
 # format for printing vcard: standard, rolodex
-print_template = standard
+print_template = rolodex
+# Format for post addresses: eu, us
+post_format = us
 
 [vcard]
 # extend contacts with your own private objects

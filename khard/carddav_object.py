@@ -297,7 +297,7 @@ class CarddavObject:
         organisations = []
         for child in self.vcard.getChildren():
             if child.name == "ORG":
-                organisations.append(child.value)
+                organisations.append(child.value[0])
         return sorted(organisations)
 
     def _add_organisation(self, organisation):
@@ -307,7 +307,7 @@ class CarddavObject:
         # check if fn attribute is already present
         if not self.vcard.getChildValue("fn") and self._get_organisations():
             # if not, set fn to organisation name
-            org_value = helpers.list_to_string(self._get_organisations()[0],
+            org_value = helpers.list_to_string(self._get_organisations(),
                                                ", ")
             name_obj = self.vcard.add('fn')
             name_obj.value = org_value.replace("\n", " ").replace("\\", "")
@@ -489,45 +489,77 @@ class CarddavObject:
         return post_adr_dict
 
     def _get_formatted_post_addresses(self):
-        formatted_post_adr_dict = {}
-        for type, post_adr_list in self._get_post_addresses().items():
-            formatted_post_adr_dict[type] = []
-            for post_adr in post_adr_list:
-                strings = []
-                if "street" in post_adr:
-                    strings.append(
-                        helpers.list_to_string(post_adr.get("street"), "\n"))
-                if "box" in post_adr and "extended" in post_adr:
-                    strings.append("{} {}".format(
-                        helpers.list_to_string(post_adr.get("box"), " "),
-                        helpers.list_to_string(post_adr.get("extended"), " ")))
-                elif "box" in post_adr:
-                    strings.append(
-                        helpers.list_to_string(post_adr.get("box"), " "))
-                elif "extended" in post_adr:
-                    strings.append(
-                        helpers.list_to_string(post_adr.get("extended"), " "))
-                if "code" in post_adr and "city" in post_adr:
-                    strings.append("{} {}".format(
-                        helpers.list_to_string(post_adr.get("code"), " "),
-                        helpers.list_to_string(post_adr.get("city"), " ")))
-                elif "code" in post_adr:
-                    strings.append(
-                        helpers.list_to_string(post_adr.get("code"), " "))
-                elif "city" in post_adr:
-                    strings.append(
-                        helpers.list_to_string(post_adr.get("city"), " "))
-                if "region" in post_adr and "country" in post_adr:
-                    strings.append("{}, {}".format(
-                        helpers.list_to_string(post_adr.get("region"), " "),
-                        helpers.list_to_string(post_adr.get("country"), " ")))
-                elif "region" in post_adr:
-                    strings.append(
-                        helpers.list_to_string(post_adr.get("region"), " "))
-                elif "country" in post_adr:
-                    strings.append(
-                        helpers.list_to_string(post_adr.get("country"), " "))
-                formatted_post_adr_dict[type].append('\n'.join(strings))
+        from .config import Config
+        config = Config()
+
+        if config.config['contact table']['post_format'].lower() == 'us':
+            formatted_post_adr_dict = {}
+            for type, post_adr_list in self._get_post_addresses().items():
+                for post_adr in post_adr_list:
+                    strings = []
+                    street = helpers.list_to_string(post_adr.get("street"), " ")
+                    if len(street) > 0:
+                        strings.append(street)
+                    extra = "{} {}".format(
+                            helpers.list_to_string(post_adr.get("box"), " "),
+                            helpers.list_to_string(post_adr.get("extended"), " "))
+                    if len(extra) > 1:
+                        strings.append(extra)
+                    city = "{}, {} {}".format(
+                            helpers.list_to_string(post_adr.get("city"), " "),
+                            helpers.list_to_string(post_adr.get("region"), " "),
+                            helpers.list_to_string(post_adr.get("code"), " "),
+                            )
+                    if len(city) > 3:
+                        strings.append(city)
+                    country = helpers.list_to_string(post_adr.get("country"), " ")
+                    if len(country) > 0:
+                        strings.append(country)
+                    formatted_post_adr_dict[type] = strings
+
+        elif config.config['contact table']['post_format'].lower() == 'eu':
+            formatted_post_adr_dict = {}
+            for type, post_adr_list in self._get_post_addresses().items():
+                for post_adr in post_adr_list:
+                    strings = []
+                    if "street" in post_adr:
+                        strings.append(
+                            helpers.list_to_string(post_adr.get("street"), " "))
+                    if "box" in post_adr and "extended" in post_adr:
+                        strings.append("{} {}".format(
+                            helpers.list_to_string(post_adr.get("box"), " "),
+                            helpers.list_to_string(post_adr.get("extended"), " ")))
+                    elif "box" in post_adr:
+                        strings.append(
+                            helpers.list_to_string(post_adr.get("box"), " "))
+                    elif "extended" in post_adr:
+                        strings.append(
+                            helpers.list_to_string(post_adr.get("extended"), " "))
+                    if "code" in post_adr and "city" in post_adr:
+                        strings.append("{} {}".format(
+                            helpers.list_to_string(post_adr.get("code"), " "),
+                            helpers.list_to_string(post_adr.get("city"), " ")))
+                    elif "code" in post_adr:
+                        strings.append(
+                            helpers.list_to_string(post_adr.get("code"), " "))
+                    elif "city" in post_adr:
+                        strings.append(
+                            helpers.list_to_string(post_adr.get("city"), " "))
+                    if "region" in post_adr and "country" in post_adr:
+                        strings.append("{}, {}".format(
+                            helpers.list_to_string(post_adr.get("region"), " "),
+                            helpers.list_to_string(post_adr.get("country"), " ")))
+                    elif "region" in post_adr:
+                        strings.append(
+                            helpers.list_to_string(post_adr.get("region"), " "))
+                    elif "country" in post_adr:
+                        strings.append(
+                            helpers.list_to_string(post_adr.get("country"), " "))
+                    formatted_post_adr_dict[type] = strings
+
+        else:
+            raise ValueError('Invalid post_format option in config.')
+
         return formatted_post_adr_dict
 
     def _add_post_address(self, type, box, extended, street, code, city,
@@ -1364,7 +1396,7 @@ class CarddavObject:
         import khard.display_templates as tmplt
 
         template_lookup = {'standard': tmplt.print_standard_template,
-                           'folder': tmplt.print_rolodex_template,
+                           'rolodex': tmplt.print_rolodex_template,
                           }
 
         config = Config()
