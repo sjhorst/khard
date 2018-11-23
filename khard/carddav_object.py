@@ -1405,7 +1405,8 @@ class CarddavObject:
             output = template_lookup[template](self)
         else:
             raise KeyError('Invalid print template specified in config.')
-        print(output)
+        if output is not None:
+            print(output)
 
 
     def write_to_file(self, overwrite=False):

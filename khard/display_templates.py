@@ -267,7 +267,7 @@ def print_rolodex_template(vcard, **kwargs):
 
     tab_width = max(len(names), max_len_titles, max_len_orgs)
 
-    if console_width < 60:
+    if console_width < 60 or len(address) == 0:
         two_col = False
         col_width = console_width - 4
     else:
@@ -288,10 +288,18 @@ def print_rolodex_template(vcard, **kwargs):
         print('│ '+org+' '*(tab_width-len(org))+' │')
     print('├─'+'─'*tab_width+'─┴'+'─'*(console_width-tab_width-5)+'╮')
 
-    first_col = email + [''] + phone 
-    if two_col:
-        second_col = address
+    if len(email) > 0 and len(phone) > 0:
+        first_col = email + [''] + phone 
+    elif len(email) > 0:
+        first_col = email
+    elif len(phone) > 0:
+        first_col = phone
     else:
+        first_col = []
+
+    if two_col and len(address) > 0:
+        second_col = address
+    elif len(address) > 0:
         first_col += [''] + address
 
     if two_col:
