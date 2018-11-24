@@ -40,11 +40,14 @@ def write_temp_file(text=""):
 def create_new_contact(address_book):
     # create temp file
     template = (
-        "# create new contact\n# Address book: %s\n# Vcard version: %s\n"
-        "# if you want to cancel, exit without saving\n\n%s"
-        % (address_book, config.get_preferred_vcard_version(),
+        "# Create New Contact\n"
+        "# ------------------\n"
+        "# Address book: %s\n"
+        "# Vcard version: %s\n"
+        "# if you want to cancel, exit without saving\n\n"
+        "%s" % (address_book, config.get_preferred_vcard_version(),
            helpers.get_new_contact_template(
-               config.get_supported_private_objects())))
+               )))
     temp_file_name = write_temp_file(template)
     temp_file_creation = helpers.file_modification_date(temp_file_name)
 
@@ -96,8 +99,11 @@ def create_new_contact(address_book):
 def modify_existing_contact(old_contact):
     # create temp file and open it with the specified text editor
     temp_file_name = write_temp_file(
-        "# Edit contact: %s\n# Address book: %s\n# Vcard version: %s\n"
-        "# if you want to cancel, exit without saving\n\n%s"
+        "# Edit Contact: %s\n"
+        "# Address book: %s\n"
+        "# Vcard version: %s\n"
+        "# if you want to cancel, exit without saving\n\n"
+        "%s"
         % (old_contact, old_contact.address_book, old_contact.get_version(),
            old_contact.get_template()))
 

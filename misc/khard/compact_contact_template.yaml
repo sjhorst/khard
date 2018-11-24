@@ -1,0 +1,71 @@
+# New Contact
+
+# Name
+Prefix     : 
+First name : 
+Additional : 
+Last name  : 
+Suffix     : 
+
+Nickname : 
+
+# Affiliation
+Organisation : 
+
+Title : 
+Role :
+
+# Contact Information
+Phone :
+    cell : 
+    home : 
+    work :
+    fax  :
+
+Email :
+    home : 
+    work : 
+
+Address :
+    home :
+        Street   : 
+        Extended : 
+        City     : 
+        Region   : 
+        Code     : 
+        Country  : 
+        
+# Important Dates
+Anniversary : 
+Birthday : 
+
+# Date Formats:
+#   vcard 3.0 and 4.0: yyyy-mm-dd or yyyy-mm-ddTHH:MM:SS
+#   vcard 4.0 only: --mm-dd or text= string value
+
+# Other Information
+Private :
+    Jabber  : 
+    Skype   : 
+    Twitter : 
+
+Webpage : 
+
+Categories : 
+
+Note : 
+
+# Line Formats
+#   
+# Single line
+#   Categories : single category
+# 
+# List
+#   Categories :
+#       - category1
+#       - category2
+#
+# Multiple lines
+#   Note : |
+#       line one
+#       line two

@@ -38,6 +38,8 @@ preferred_email_address_type = pref, work, home
 print_template = rolodex
 # Format for post addresses: eu, us
 post_format = us
+# Contact format: default, compact
+contact_format = compact
 
 [vcard]
 # extend contacts with your own private objects

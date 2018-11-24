@@ -49,6 +49,7 @@ setup(
     ],
     install_requires = ['atomicwrites', 'configobj', 'ruamel.yaml', 'unidecode', 'vobject'],
     packages = [ 'khard' ],
+    package_data = {'khard': ['data/*.yaml']},
     entry_points = {
         'console_scripts': [ 'khard = khard.khard:main' ]
     },
