@@ -1186,6 +1186,9 @@ class CarddavObject:
                     "Use the | character to create a multi-line note.")
 
     def get_template(self):
+        from .config import Config
+        config = Config()
+
         strings = []
         for line in helpers.get_new_contact_template().splitlines():
             if line.startswith("#"):
@@ -1252,45 +1255,84 @@ class CarddavObject:
             elif line.lower().startswith("address"):
                 strings.append("Address :")
                 if not self._get_post_addresses().keys():
-                    strings.append("    home :")
-                    strings.append("        Box      : ")
-                    strings.append("        Extended : ")
-                    strings.append("        Street   : ")
-                    strings.append("        Code     : ")
-                    strings.append("        City     : ")
-                    strings.append("        Region   : ")
-                    strings.append("        Country  : ")
+                    if config.config['contact table']['post_format'].lower() == 'eu':
+                        strings.append("    home :")
+                        strings.append("        Box      : ")
+                        strings.append("        Extended : ")
+                        strings.append("        Street   : ")
+                        strings.append("        Code     : ")
+                        strings.append("        City     : ")
+                        strings.append("        Region   : ")
+                        strings.append("        Country  : ")
+                    if config.config['contact table']['post_format'].lower() == 'us':
+                        strings.append("    home :")
+                        strings.append("        Street   : ")
+                        strings.append("        Extended : ")
+                        strings.append("        City     : ")
+                        strings.append("        Region   : ")
+                        strings.append("        Code     : ")
+                        strings.append("        Country  : ")
+                    else:
+                        raise ValueError('Unrecognized post address format in config file')
                 else:
                     for type, post_adr_list in sorted(
                             self._get_post_addresses().items(),
                             key=lambda k: k[0].lower()):
                         strings.append("    %s:" % type)
-                        for post_adr in post_adr_list:
-                            indentation = 8
-                            if len(post_adr_list) > 1:
-                                indentation += 4
-                                strings.append("        -")
-                            strings += helpers.convert_to_yaml(
-                                "Box", post_adr.get("box"), indentation, 9,
-                                True)
-                            strings += helpers.convert_to_yaml(
-                                "Extended", post_adr.get("extended"),
-                                indentation, 9, True)
-                            strings += helpers.convert_to_yaml(
-                                "Street", post_adr.get("street"), indentation,
-                                9, True)
-                            strings += helpers.convert_to_yaml(
-                                "Code", post_adr.get("code"), indentation, 9,
-                                True)
-                            strings += helpers.convert_to_yaml(
-                                "City", post_adr.get("city"), indentation, 9,
-                                True)
-                            strings += helpers.convert_to_yaml(
-                                "Region", post_adr.get("region"), indentation,
-                                9, True)
-                            strings += helpers.convert_to_yaml(
-                                "Country", post_adr.get("country"),
-                                indentation, 9, True)
+                        if config.config['contact table']['post_format'].lower() == 'eu':
+                            for post_adr in post_adr_list:
+                                indentation = 8
+                                if len(post_adr_list) > 1:
+                                    indentation += 4
+                                    strings.append("        -")
+                                strings += helpers.convert_to_yaml(
+                                    "Box", post_adr.get("box"), indentation, 9,
+                                    True)
+                                strings += helpers.convert_to_yaml(
+                                    "Extended", post_adr.get("extended"),
+                                    indentation, 9, True)
+                                strings += helpers.convert_to_yaml(
+                                    "Street", post_adr.get("street"), indentation,
+                                    9, True)
+                                strings += helpers.convert_to_yaml(
+                                    "Code", post_adr.get("code"), indentation, 9,
+                                    True)
+                                strings += helpers.convert_to_yaml(
+                                    "City", post_adr.get("city"), indentation, 9,
+                                    True)
+                                strings += helpers.convert_to_yaml(
+                                    "Region", post_adr.get("region"), indentation,
+                                    9, True)
+                                strings += helpers.convert_to_yaml(
+                                    "Country", post_adr.get("country"),
+                                    indentation, 9, True)
+                        elif config.config['contact table']['post_format'].lower() == 'us':
+                            for post_adr in post_adr_list:
+                                indentation = 8
+                                if len(post_adr_list) > 1:
+                                    indentation += 4
+                                    strings.append("        -")
+                                strings += helpers.convert_to_yaml(
+                                    "Street", post_adr.get("street"), indentation,
+                                    9, True)
+                                strings += helpers.convert_to_yaml(
+                                    "Extended", post_adr.get("extended"),
+                                    indentation, 9, True)
+                                strings += helpers.convert_to_yaml(
+                                    "City", post_adr.get("city"), indentation, 9,
+                                    True)
+                                strings += helpers.convert_to_yaml(
+                                    "Region", post_adr.get("region"), indentation,
+                                    9, True)
+                                strings += helpers.convert_to_yaml(
+                                    "Code", post_adr.get("code"), indentation, 9,
+                                    True)
+                                strings += helpers.convert_to_yaml(
+                                    "Country", post_adr.get("country"),
+                                    indentation, 9, True)
+                        else:
+                            raise ValueError('Unrecognized post address format in config file')
+                        strings += '\n'
 
             elif line.lower().startswith("private"):
                 strings.append("Private :")

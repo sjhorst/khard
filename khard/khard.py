@@ -98,8 +98,11 @@ def create_new_contact(address_book):
 def modify_existing_contact(old_contact):
     # create temp file and open it with the specified text editor
     temp_file_name = write_temp_file(
-        "# Edit contact: %s\n# Address book: %s\n# Vcard version: %s\n"
-        "# if you want to cancel, exit without saving\n\n%s"
+        "# Edit Contact: %s\n"
+        "# Address book: %s\n"
+        "# Vcard version: %s\n"
+        "# if you want to cancel, exit without saving\n\n"
+        "%s"
         % (old_contact, old_contact.address_book, old_contact.get_version(),
            old_contact.get_template()))
 
