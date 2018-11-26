@@ -10,6 +10,12 @@ from .object_type import ObjectType
 
 
 def pretty_print(table, justify="L"):
+    import os 
+    from math import ceil
+
+    console_size = os.popen('stty size', 'r').read().split()
+    console_width = int(console_size[1])
+
     # get width for every column
     column_widths = [0] * table[0].__len__()
     offset = 3
@@ -18,18 +24,37 @@ def pretty_print(table, justify="L"):
             width = len(str(col))
             if width > column_widths[index]:
                 column_widths[index] = width
+    while sum(column_widths)+(offset+1)*(len(column_widths)-1) > console_width:
+        # First narrow the offset to 0
+        offset = 0
+        if table[0][-1] == 'UID':
+            # Second drop the UID column altogether if present
+            for row in table:
+                row.pop()
+            column_widths.pop()
+            continue
+        # Third narrow down the columns proportionally to their total width
+        overage = sum(column_widths)+(offset+1)*(len(column_widths)-1) - console_width
+        column_sum = sum(column_widths)
+        for index, width in enumerate(column_widths):
+            pct = width/column_sum
+            trim = ceil(overage*pct)
+            column_widths[index] -= trim
     table_row_list = []
     for row in table:
         single_row_list = []
         for col_index, col in enumerate(row):
+            text = str(col)
+            if len(text) > column_widths[col_index]:
+                text = text[:column_widths[col_index]-1]+'…'
             if justify == "R":  # justify right
-                formated_column = str(col).rjust(column_widths[col_index] +
+                formated_column = text.rjust(column_widths[col_index] +
                                                  offset)
             elif justify == "L":  # justify left
-                formated_column = str(col).ljust(column_widths[col_index] +
+                formated_column = text.ljust(column_widths[col_index] +
                                                  offset)
             elif justify == "C":  # justify center
-                formated_column = str(col).center(column_widths[col_index] +
+                formated_column = text.center(column_widths[col_index] +
                                                   offset)
             single_row_list.append(formated_column)
         table_row_list.append(' '.join(single_row_list))
